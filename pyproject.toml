@@ -38,3 +38,6 @@ validate = "task lint && task format && task typecheck && task test"
 
 [tool.pytest.ini_options]
 testpaths = ["src"]
+
+[tool.fastapi]
+entrypoint = "myapp.main:app"
