@@ -1,6 +1,8 @@
 from myapp.features.app import UserUseCases
-from myapp.features.infra import MemoryUserRepository
+from myapp.shared.di.app import Context
 
-_user_repo = MemoryUserRepository()
+from .context_impl import ContextImpl
 
-user_use_cases = UserUseCases(user_repo=_user_repo)
+_ctx: Context = ContextImpl()
+
+user_use_cases = UserUseCases(_ctx)

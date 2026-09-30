@@ -1,13 +1,14 @@
-from myapp.features.domain import User, UserRepository
+from myapp.features.domain import User
+from myapp.shared.di.app import Context
 from myapp.shared.errors.domain import DomainError, ErrorType
 
 
 class UserUseCases:
-    def __init__(self, user_repo: UserRepository) -> None:
-        self._user_repo = user_repo
+    def __init__(self, ctx: Context) -> None:
+        self._ctx = ctx
 
     def get_by_id(self, id: str) -> User:
-        user = self._user_repo.get_by_id(user_id=id)
+        user = self._ctx.repo.user.get_by_id(user_id=id)
 
         if user is None:
             raise DomainError(
