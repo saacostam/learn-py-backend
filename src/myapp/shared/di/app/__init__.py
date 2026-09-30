@@ -1,6 +1,11 @@
 from typing import Protocol
 
 from myapp.features.user.domain import UserRepository
+from myapp.shared.adapters.domain import IdGenerator
+
+
+class Adapters(Protocol):
+    id: IdGenerator
 
 
 class Repositories(Protocol):
@@ -8,4 +13,5 @@ class Repositories(Protocol):
 
 
 class Context(Protocol):
+    adapter: Adapters
     repo: Repositories
