@@ -3,7 +3,6 @@ from pydantic import BaseModel
 
 from myapp.shared.di.infra import user_use_cases
 
-
 user_router = APIRouter()
 
 
