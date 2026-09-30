@@ -7,6 +7,16 @@ class UserUseCases:
     def __init__(self, ctx: Context) -> None:
         self._ctx = ctx
 
+    def create(self, name: str) -> str:
+        user: User = User(
+            id=self._ctx.adapter.id.gen(),
+            name=name,
+        )
+
+        created_user = self._ctx.repo.user.create(user)
+
+        return created_user.id
+
     def get_by_id(self, id: str) -> User:
         user = self._ctx.repo.user.get_by_id(user_id=id)
 

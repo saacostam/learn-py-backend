@@ -9,6 +9,33 @@ from myapp.shared.errors.domain import DomainError, ErrorType
 from myapp.test import mock_context
 
 
+def test_create_returns_created_user_id() -> None:
+    ctx = mock_context()
+
+    ctx.adapter.id.gen.return_value = "user-1"
+
+    created_user = User(
+        id="user-1",
+        name="John Doe",
+    )
+
+    ctx.repo.user.create.return_value = created_user
+
+    use_cases = UserUseCases(cast(Context, ctx))
+
+    result = use_cases.create("John Doe")
+
+    assert result == "user-1"
+
+    ctx.adapter.id.gen.assert_called_once_with()
+    ctx.repo.user.create.assert_called_once_with(
+        User(
+            id="user-1",
+            name="John Doe",
+        )
+    )
+
+
 def test_get_by_id_returns_user() -> None:
     ctx = mock_context()
 
