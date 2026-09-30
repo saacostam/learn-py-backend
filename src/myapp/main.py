@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from fast_api.features.presentation import user_router
+from myapp.features.presentation import user_router
 
 app = FastAPI()
 

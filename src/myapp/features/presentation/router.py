@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from fast_api.shared.di.infra import user_use_cases
+from myapp.shared.di.infra import user_use_cases
 
 user_router = APIRouter()
 

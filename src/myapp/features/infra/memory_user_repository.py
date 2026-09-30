@@ -1,4 +1,4 @@
-from fast_api.features.domain import User
+from myapp.features.domain import User
 
 
 class MemoryUserRepository:

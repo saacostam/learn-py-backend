@@ -1,4 +1,4 @@
-from fast_api.features.domain import User, UserRepository
+from myapp.features.domain import User, UserRepository
 
 
 class UserUseCases:

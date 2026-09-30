@@ -1,5 +1,5 @@
 [project]
-name = "fast-api"
+name = "myapp"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.scripts]
-fast-api = "fast_api:main"
+myapp = "myapp:main"
 
 [build-system]
 requires = ["uv_build>=0.12.21,<0.13.0"]
