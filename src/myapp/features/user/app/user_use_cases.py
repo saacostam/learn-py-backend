@@ -1,4 +1,4 @@
-from myapp.features.domain import User
+from myapp.features.user.domain import User
 from myapp.shared.di.app import Context
 from myapp.shared.errors.domain import DomainError, ErrorType
 

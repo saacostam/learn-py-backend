@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-from myapp.features.domain import UserRepository
+from myapp.features.user.domain import UserRepository
 
 
 class MockContext:

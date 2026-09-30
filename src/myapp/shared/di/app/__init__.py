@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from myapp.features.domain import UserRepository
+from myapp.features.user.domain import UserRepository
 
 
 class Repositories(Protocol):

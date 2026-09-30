@@ -1,5 +1,5 @@
-from myapp.features.domain import UserRepository
-from myapp.features.infra import MemoryUserRepository
+from myapp.features.user.domain import UserRepository
+from myapp.features.user.infra import MemoryUserRepository
 from myapp.shared.di.app import Repositories
 
 

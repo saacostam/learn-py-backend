@@ -1,4 +1,4 @@
-from myapp.features.domain import User
+from myapp.features.user.domain import User
 
 
 class MemoryUserRepository:

@@ -2,8 +2,8 @@ from typing import cast
 
 import pytest
 
-from myapp.features.app.user_use_cases import UserUseCases
-from myapp.features.domain import User
+from myapp.features.user.app.user_use_cases import UserUseCases
+from myapp.features.user.domain import User
 from myapp.shared.di.app import Context
 from myapp.shared.errors.domain import DomainError, ErrorType
 from myapp.test import mock_context

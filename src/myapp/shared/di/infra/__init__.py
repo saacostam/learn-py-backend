@@ -1,4 +1,4 @@
-from myapp.features.app import UserUseCases
+from myapp.features.user.app import UserUseCases
 from myapp.shared.di.app import Context
 
 from .context_impl import ContextImpl
