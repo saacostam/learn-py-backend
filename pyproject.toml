@@ -21,11 +21,13 @@ build-backend = "uv_build"
 [dependency-groups]
 dev = [
     "mypy>=2.3.1",
+    "ruff>=0.16.9",
     "taskipy>=1.14.1",
 ]
 [tool.taskipy.tasks]
-#lint = "uv run ruff check ."
+lint = "uv run ruff check ."
+format = "uv run ruff format ."
 typecheck = "uv run mypy ."
 # test = "uv run pytest"
 # You can even chain commands together like npm scripts
-# validate = "task lint && task typecheck && task test"
+validate = "task lint && task format && task typecheck"
