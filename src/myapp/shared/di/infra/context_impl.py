@@ -1,3 +1,5 @@
+from myapp.features.todo.domain import TodoRepository
+from myapp.features.todo.infra import MemoryTodoRepository
 from myapp.features.user.domain import UserRepository
 from myapp.features.user.infra import MemoryUserRepository
 from myapp.shared.adapters.domain import IdGenerator
@@ -12,6 +14,7 @@ class AdaptersImpl:
 
 class RepositoriesImpl:
     def __init__(self) -> None:
+        self.todo: TodoRepository = MemoryTodoRepository()
         self.user: UserRepository = MemoryUserRepository()
 
 
