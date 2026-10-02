@@ -1,34 +1,35 @@
-from typing import cast
-
 import pytest
 
 from myapp.features.user.app.user_use_cases import UserUseCases
 from myapp.features.user.domain import User
-from myapp.shared.di.app import Context
+from myapp.features.user.test import mock_user_repository
+from myapp.shared.adapters.test import mock_id_generator
 from myapp.shared.errors.domain import DomainError, ErrorType
-from myapp.test import mock_context
 
 
 def test_create_returns_created_user_id() -> None:
-    ctx = mock_context()
-
-    ctx.adapter.id.gen.return_value = "user-1"
+    id_generator = mock_id_generator()
+    id_generator.gen.return_value = "user-1"
 
     created_user = User(
         id="user-1",
         name="John Doe",
     )
 
-    ctx.repo.user.create.return_value = created_user
+    user_repo = mock_user_repository()
+    user_repo.create.return_value = created_user
 
-    use_cases = UserUseCases(cast(Context, ctx))
+    use_cases = UserUseCases(
+        id_generator=id_generator,
+        user_repo=user_repo,
+    )
 
     result = use_cases.create("John Doe")
 
     assert result == "user-1"
 
-    ctx.adapter.id.gen.assert_called_once_with()
-    ctx.repo.user.create.assert_called_once_with(
+    id_generator.gen.assert_called_once_with()
+    user_repo.create.assert_called_once_with(
         User(
             id="user-1",
             name="John Doe",
@@ -37,29 +38,37 @@ def test_create_returns_created_user_id() -> None:
 
 
 def test_get_by_id_returns_user() -> None:
-    ctx = mock_context()
+    id_generator = mock_id_generator()
 
     user = User(
         id="user-1",
         name="John Doe",
     )
 
-    ctx.repo.user.get_by_id.return_value = user
+    user_repo = mock_user_repository()
+    user_repo.get_by_id.return_value = user
 
-    use_cases = UserUseCases(cast(Context, ctx))
+    use_cases = UserUseCases(
+        id_generator=id_generator,
+        user_repo=user_repo,
+    )
 
     result = use_cases.get_by_id("user-1")
 
     assert result == user
-    ctx.repo.user.get_by_id.assert_called_once_with(user_id="user-1")
+    user_repo.get_by_id.assert_called_once_with(user_id="user-1")
 
 
 def test_get_by_id_raises_not_found() -> None:
-    ctx = mock_context()
+    id_generator = mock_id_generator()
 
-    ctx.repo.user.get_by_id.return_value = None
+    user_repo = mock_user_repository()
+    user_repo.get_by_id.return_value = None
 
-    use_cases = UserUseCases(cast(Context, ctx))
+    use_cases = UserUseCases(
+        id_generator=id_generator,
+        user_repo=user_repo,
+    )
 
     with pytest.raises(DomainError) as error:
         use_cases.get_by_id("user-1")
@@ -68,4 +77,4 @@ def test_get_by_id_raises_not_found() -> None:
     assert error.value.user_msg == "User not found."
     assert error.value.msg == "User with id 'user-1' was not found"
 
-    ctx.repo.user.get_by_id.assert_called_once_with(user_id="user-1")
+    user_repo.get_by_id.assert_called_once_with(user_id="user-1")
