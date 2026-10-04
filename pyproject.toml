@@ -23,6 +23,7 @@ dev = [
     "mypy>=2.3.1",
     "pre-commit>=4.6.2",
     "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
     "pytest-mock>=3.16.0",
     "ruff>=0.16.9",
     "taskipy>=1.14.1",
@@ -38,6 +39,7 @@ validate = "task lint && task format && task typecheck && task test"
 
 [tool.pytest.ini_options]
 testpaths = ["src"]
+asyncio_mode = "auto"
 
 [tool.fastapi]
 entrypoint = "myapp.main:app"

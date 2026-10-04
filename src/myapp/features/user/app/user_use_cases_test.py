@@ -7,7 +7,7 @@ from myapp.shared.adapters.test import mock_id_generator
 from myapp.shared.errors.domain import DomainError, ErrorType
 
 
-def test_create_returns_created_user_id() -> None:
+async def test_create_returns_created_user_id() -> None:
     id_generator = mock_id_generator()
     id_generator.gen.return_value = "user-1"
 
@@ -24,12 +24,12 @@ def test_create_returns_created_user_id() -> None:
         user_repo=user_repo,
     )
 
-    result = use_cases.create("John Doe")
+    result = await use_cases.create("John Doe")
 
     assert result == "user-1"
 
     id_generator.gen.assert_called_once_with()
-    user_repo.create.assert_called_once_with(
+    user_repo.create.assert_awaited_once_with(
         User(
             id="user-1",
             name="John Doe",
@@ -37,7 +37,7 @@ def test_create_returns_created_user_id() -> None:
     )
 
 
-def test_get_by_id_returns_user() -> None:
+async def test_get_by_id_returns_user() -> None:
     id_generator = mock_id_generator()
 
     user = User(
@@ -53,13 +53,13 @@ def test_get_by_id_returns_user() -> None:
         user_repo=user_repo,
     )
 
-    result = use_cases.get_by_id("user-1")
+    result = await use_cases.get_by_id("user-1")
 
     assert result == user
-    user_repo.get_by_id.assert_called_once_with(user_id="user-1")
+    user_repo.get_by_id.assert_awaited_once_with(user_id="user-1")
 
 
-def test_get_by_id_raises_not_found() -> None:
+async def test_get_by_id_raises_not_found() -> None:
     id_generator = mock_id_generator()
 
     user_repo = mock_user_repository()
@@ -71,10 +71,10 @@ def test_get_by_id_raises_not_found() -> None:
     )
 
     with pytest.raises(DomainError) as error:
-        use_cases.get_by_id("user-1")
+        await use_cases.get_by_id("user-1")
 
     assert error.value.type == ErrorType.NOT_FOUND
     assert error.value.user_msg == "User not found."
     assert error.value.msg == "User with id 'user-1' was not found"
 
-    user_repo.get_by_id.assert_called_once_with(user_id="user-1")
+    user_repo.get_by_id.assert_awaited_once_with(user_id="user-1")

@@ -11,10 +11,11 @@ class CreateUserRequest(BaseModel):
 
 
 @user_router.post("/")
-def create_user_route(request: CreateUserRequest) -> str:
-    return user_use_cases.create(name=request.name)
+async def create_user_route(request: CreateUserRequest) -> str:
+    res = await user_use_cases.create(name=request.name)
+    return res
 
 
 @user_router.get("/{user_id}")
-def get_user_route(user_id: str):
+async def get_user_route(user_id: str):
     return user_use_cases.get_by_id(id=user_id)
