@@ -10,11 +10,15 @@ from myapp.shared.adapters.infra import (
     PyJwtAdapter,
     UuidGenerator,
 )
+from myapp.shared.dependencies import AuthDependency
 
 # Shared
 jwt_adapter: JwtAdapter = PyJwtAdapter()
 id_generator: IdGenerator = UuidGenerator()
 password_hasher: PasswordHasher = BcryptPasswordHasher()
+
+# Deps
+get_current_user = AuthDependency(jwt_adapter=jwt_adapter)
 
 # User Module
 user_repository: UserRepository = MemoryUserRepository()

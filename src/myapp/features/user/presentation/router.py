@@ -1,7 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from myapp.shared.di.infra import user_use_cases
+from myapp.shared.adapters.domain import TokenPayload
+from myapp.shared.di.infra import get_current_user, user_use_cases
 
 user_router = APIRouter()
 
@@ -28,6 +29,7 @@ async def login_user_router(request: LoginRequest) -> str:
     return res
 
 
-@user_router.get("/{user_id}")
-async def get_user_route(user_id: str):
-    return user_use_cases.get_by_id(id=user_id)
+@user_router.get("/me")
+async def get_current_user_route(payload: TokenPayload = Depends(get_current_user)):
+    user_id = payload.user_id
+    return await user_use_cases.get_by_id(id=user_id)
