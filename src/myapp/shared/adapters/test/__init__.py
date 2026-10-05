@@ -1,6 +1,10 @@
 from unittest.mock import Mock
 
-from myapp.shared.adapters.domain import IdGenerator, PasswordHasher
+from myapp.shared.adapters.domain import IdGenerator, JwtAdapter, PasswordHasher
+
+
+def mock_jwt_adapter():
+    return Mock(spec=JwtAdapter)
 
 
 def mock_id_generator():
