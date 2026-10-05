@@ -17,6 +17,17 @@ async def signup_user_route(request: CreateUserRequest) -> str:
     return res
 
 
+class LoginRequest(BaseModel):
+    name: str
+    password: str
+
+
+@user_router.post("/login")
+async def login_user_router(request: LoginRequest) -> str:
+    res = await user_use_cases.login(name=request.name, password=request.password)
+    return res
+
+
 @user_router.get("/{user_id}")
 async def get_user_route(user_id: str):
     return user_use_cases.get_by_id(id=user_id)
