@@ -22,4 +22,4 @@ app.include_router(user_router, prefix="/users", tags=["users"])
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"ok": True}
