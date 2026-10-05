@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import TypedDict
 
 
 class ErrorType(str, Enum):
@@ -12,6 +13,11 @@ class ErrorType(str, Enum):
     SERVER_ERROR = "Server Error"
 
 
+class FieldErrorDict(TypedDict):
+    field: str
+    message: str
+
+
 class DomainError(Exception):
     def __init__(
         self,
@@ -19,7 +25,7 @@ class DomainError(Exception):
         msg: str,
         type: ErrorType,
         user_msg: str,
-        fields: list[dict[str, str]] | None = None,
+        fields: list[FieldErrorDict] | None = None,
     ) -> None:
         super().__init__(msg)
 
