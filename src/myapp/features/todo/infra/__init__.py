@@ -1,1 +1,2 @@
 from .memory_todo_repository import MemoryTodoRepository as MemoryTodoRepository
+from .user_module_client import UserModuleClient as UserModuleClient
