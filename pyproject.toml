@@ -1,5 +1,5 @@
 [project]
-name = "myapp"
+name = "lab"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-myapp = "myapp:main"
+lab = "lab:main"
 
 [build-system]
 requires = ["uv_build>=0.12.21,<0.13.0"]
@@ -45,7 +45,7 @@ asyncio_mode = "auto"
 addopts = ["--import-mode=importlib"]
 
 [tool.fastapi]
-entrypoint = "myapp.main:app"
+entrypoint = "lab.main:app"
 
 [tool.ruff.lint.flake8-bugbear]
 extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]

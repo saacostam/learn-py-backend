@@ -1,4 +1,4 @@
-# MyApp
+# Lab: My Py Api
 
 Python backend API for learning and eventually developing apps with Python.
 
