@@ -174,6 +174,88 @@ async def test_delete_todo_wrong_owner_fails() -> None:
     todo_repo.remove.assert_not_awaited()
 
 
+async def test_get_todo_by_id_success() -> None:
+    id_generator = mock_id_generator()
+
+    todo_repo = mock_todo_repository()
+    existing_todo = Todo(
+        id="todo-id-123",
+        name="Buy groceries",
+        completed=False,
+        user_id="user-1",
+    )
+    todo_repo.get_by_id.return_value = existing_todo
+
+    user_client = mock_user_client()
+    user_client.get_user_status.return_value = UserStatus.ACTIVE
+
+    use_cases = TodoUseCases(
+        id_generator=id_generator,
+        todo_repo=todo_repo,
+        user_client=user_client,
+    )
+
+    result = await use_cases.get_by_id(id="todo-id-123", user_id="user-1")
+
+    assert result == existing_todo
+    todo_repo.get_by_id.assert_awaited_once_with(id="todo-id-123")
+
+
+async def test_get_todo_by_id_not_found_fails() -> None:
+    id_generator = mock_id_generator()
+
+    todo_repo = mock_todo_repository()
+    todo_repo.get_by_id.return_value = None
+
+    user_client = mock_user_client()
+    user_client.get_user_status.return_value = UserStatus.ACTIVE
+
+    use_cases = TodoUseCases(
+        id_generator=id_generator,
+        todo_repo=todo_repo,
+        user_client=user_client,
+    )
+
+    with pytest.raises(DomainError) as error:
+        await use_cases.get_by_id(id="non-existent-id", user_id="user-1")
+
+    assert error.value.type == ErrorType.NOT_FOUND
+    assert error.value.user_msg == "Todo not found"
+    assert error.value.msg == "Todo with id non-existent-id for user-1 not found"
+
+    todo_repo.get_by_id.assert_awaited_once_with(id="non-existent-id")
+
+
+async def test_get_todo_by_id_wrong_owner_fails() -> None:
+    id_generator = mock_id_generator()
+
+    todo_repo = mock_todo_repository()
+    foreign_todo = Todo(
+        id="todo-id-123",
+        name="Buy groceries",
+        completed=False,
+        user_id="user-2",
+    )
+    todo_repo.get_by_id.return_value = foreign_todo
+
+    user_client = mock_user_client()
+    user_client.get_user_status.return_value = UserStatus.ACTIVE
+
+    use_cases = TodoUseCases(
+        id_generator=id_generator,
+        todo_repo=todo_repo,
+        user_client=user_client,
+    )
+
+    with pytest.raises(DomainError) as error:
+        await use_cases.get_by_id(id="todo-id-123", user_id="user-1")
+
+    assert error.value.type == ErrorType.NOT_FOUND
+    assert error.value.user_msg == "Todo not found"
+
+    todo_repo.get_by_id.assert_awaited_once_with(id="todo-id-123")
+
+
 async def test_update_todo_success() -> None:
     id_generator = mock_id_generator()
 

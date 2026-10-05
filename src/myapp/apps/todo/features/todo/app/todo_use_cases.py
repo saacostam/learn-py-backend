@@ -39,6 +39,11 @@ class TodoUseCases:
 
         return todo.id
 
+    async def get_by_id(self, id: str, user_id: str) -> Todo:
+        todo = await self._get_owned_todo(id=id, user_id=user_id)
+
+        return todo
+
     async def update(
         self, id: str, name: str | None, completed: bool | None, user_id: str
     ) -> Todo:
