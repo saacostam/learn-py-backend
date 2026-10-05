@@ -1,5 +1,5 @@
-from myapp.features.todo.domain import UserStatus
-from myapp.features.user.app import UserUseCases
+from myapp.apps.todo.features.todo.domain import UserStatus
+from myapp.apps.todo.features.user.app import UserUseCases
 
 
 class UserModuleClient:

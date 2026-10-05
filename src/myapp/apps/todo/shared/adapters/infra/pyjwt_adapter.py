@@ -1,6 +1,6 @@
 import jwt
 
-from myapp.shared.adapters.domain import TokenPayload
+from myapp.apps.todo.shared.adapters.domain import TokenPayload
 
 SECRET = "REPLACE_ME"
 ALGORITHM = "HS256"

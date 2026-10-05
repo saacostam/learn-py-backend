@@ -1,5 +1,5 @@
-from myapp.features.user.domain import User, UserRepository, UserWithPwHash
-from myapp.shared.adapters.domain import (
+from myapp.apps.todo.features.user.domain import User, UserRepository, UserWithPwHash
+from myapp.apps.todo.shared.adapters.domain import (
     IdGenerator,
     JwtAdapter,
     PasswordHasher,

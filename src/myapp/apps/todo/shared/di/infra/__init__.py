@@ -1,16 +1,20 @@
-from myapp.features.todo.app import TodoUseCases
-from myapp.features.todo.domain import TodoRepository, UserClient
-from myapp.features.todo.infra import MemoryTodoRepository, UserModuleClient
-from myapp.features.user.app import UserUseCases
-from myapp.features.user.domain import UserRepository
-from myapp.features.user.infra import MemoryUserRepository
-from myapp.shared.adapters.domain import IdGenerator, JwtAdapter, PasswordHasher
-from myapp.shared.adapters.infra import (
+from myapp.apps.todo.features.todo.app import TodoUseCases
+from myapp.apps.todo.features.todo.domain import TodoRepository, UserClient
+from myapp.apps.todo.features.todo.infra import MemoryTodoRepository, UserModuleClient
+from myapp.apps.todo.features.user.app import UserUseCases
+from myapp.apps.todo.features.user.domain import UserRepository
+from myapp.apps.todo.features.user.infra import MemoryUserRepository
+from myapp.apps.todo.shared.adapters.domain import (
+    IdGenerator,
+    JwtAdapter,
+    PasswordHasher,
+)
+from myapp.apps.todo.shared.adapters.infra import (
     BcryptPasswordHasher,
     PyJwtAdapter,
     UuidGenerator,
 )
-from myapp.shared.dependencies import AuthDependency
+from myapp.apps.todo.shared.dependencies import AuthDependency
 
 # Shared
 jwt_adapter: JwtAdapter = PyJwtAdapter()

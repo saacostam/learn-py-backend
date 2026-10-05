@@ -1,5 +1,10 @@
-from myapp.features.todo.domain import Todo, TodoRepository, UserClient, UserStatus
-from myapp.shared.adapters.domain import IdGenerator
+from myapp.apps.todo.features.todo.domain import (
+    Todo,
+    TodoRepository,
+    UserClient,
+    UserStatus,
+)
+from myapp.apps.todo.shared.adapters.domain import IdGenerator
 from myapp.shared.errors.domain import DomainError, ErrorType
 
 

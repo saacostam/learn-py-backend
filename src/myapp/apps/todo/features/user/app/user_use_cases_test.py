@@ -1,9 +1,9 @@
 import pytest
 
-from myapp.features.user.app.user_use_cases import UserUseCases
-from myapp.features.user.domain import User, UserWithPwHash
-from myapp.features.user.test import mock_user_repository
-from myapp.shared.adapters.test import (
+from myapp.apps.todo.features.user.app.user_use_cases import UserUseCases
+from myapp.apps.todo.features.user.domain import User, UserWithPwHash
+from myapp.apps.todo.features.user.test import mock_user_repository
+from myapp.apps.todo.shared.adapters.test import (
     mock_id_generator,
     mock_jwt_adapter,
     mock_password_hasher,

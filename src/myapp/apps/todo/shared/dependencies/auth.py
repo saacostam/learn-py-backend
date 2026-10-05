@@ -1,7 +1,7 @@
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from myapp.shared.adapters.domain import JwtAdapter, TokenPayload
+from myapp.apps.todo.shared.adapters.domain import JwtAdapter, TokenPayload
 from myapp.shared.errors.domain import DomainError, ErrorType
 
 security = HTTPBearer()

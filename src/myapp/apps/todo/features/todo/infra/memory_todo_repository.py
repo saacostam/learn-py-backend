@@ -1,4 +1,4 @@
-from myapp.features.todo.domain import Todo
+from myapp.apps.todo.features.todo.domain import Todo
 
 
 class MemoryTodoRepository:

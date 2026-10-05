@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from myapp.features.todo.domain import Todo
-from myapp.shared.adapters.domain import TokenPayload
-from myapp.shared.di.infra import get_current_user, todo_use_cases
+from myapp.apps.todo.features.todo.domain import Todo
+from myapp.apps.todo.shared.adapters.domain import TokenPayload
+from myapp.apps.todo.shared.di.infra import get_current_user, todo_use_cases
 
 todo_router = APIRouter()
 

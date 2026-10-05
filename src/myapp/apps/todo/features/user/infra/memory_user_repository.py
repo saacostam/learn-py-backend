@@ -1,4 +1,4 @@
-from myapp.features.user.domain import User, UserWithPwHash
+from myapp.apps.todo.features.user.domain import User, UserWithPwHash
 
 
 class MemoryUserRepository:

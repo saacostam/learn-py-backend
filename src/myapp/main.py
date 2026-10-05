@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 
-from myapp.features.todo.presentation import todo_router
-from myapp.features.user.presentation import user_router
+from myapp.apps.todo.features.todo.presentation import todo_router
+from myapp.apps.todo.features.user.presentation import user_router
 from myapp.shared.errors.domain import DomainError
 from myapp.shared.errors.presentation import (
     domain_error_exception_handler,
