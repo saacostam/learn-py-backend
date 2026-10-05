@@ -39,6 +39,9 @@ class TodoUseCases:
 
         return todo.id
 
+    async def get_all(self, user_id: str) -> list[Todo]:
+        return await self.todo_repo.get_all_by_user_id(user_id=user_id)
+
     async def get_by_id(self, id: str, user_id: str) -> Todo:
         todo = await self._get_owned_todo(id=id, user_id=user_id)
 

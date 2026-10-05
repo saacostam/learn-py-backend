@@ -174,6 +174,52 @@ async def test_delete_todo_wrong_owner_fails() -> None:
     todo_repo.remove.assert_not_awaited()
 
 
+async def test_get_all_todos_success() -> None:
+    id_generator = mock_id_generator()
+
+    todo_repo = mock_todo_repository()
+    todos = [
+        Todo(id="todo-id-1", name="Buy groceries", completed=False, user_id="user-1"),
+        Todo(id="todo-id-2", name="Walk the dog", completed=True, user_id="user-1"),
+    ]
+    todo_repo.get_all_by_user_id.return_value = todos
+
+    user_client = mock_user_client()
+    user_client.get_user_status.return_value = UserStatus.ACTIVE
+
+    use_cases = TodoUseCases(
+        id_generator=id_generator,
+        todo_repo=todo_repo,
+        user_client=user_client,
+    )
+
+    result = await use_cases.get_all(user_id="user-1")
+
+    assert result == todos
+    todo_repo.get_all_by_user_id.assert_awaited_once_with(user_id="user-1")
+
+
+async def test_get_all_todos_empty_success() -> None:
+    id_generator = mock_id_generator()
+
+    todo_repo = mock_todo_repository()
+    todo_repo.get_all_by_user_id.return_value = []
+
+    user_client = mock_user_client()
+    user_client.get_user_status.return_value = UserStatus.ACTIVE
+
+    use_cases = TodoUseCases(
+        id_generator=id_generator,
+        todo_repo=todo_repo,
+        user_client=user_client,
+    )
+
+    result = await use_cases.get_all(user_id="user-1")
+
+    assert result == []
+    todo_repo.get_all_by_user_id.assert_awaited_once_with(user_id="user-1")
+
+
 async def test_get_todo_by_id_success() -> None:
     id_generator = mock_id_generator()
 
