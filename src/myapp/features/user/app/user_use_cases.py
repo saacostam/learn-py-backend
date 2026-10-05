@@ -56,6 +56,16 @@ class UserUseCases:
         return token
 
     async def signup(self, name: str, password: str) -> str:
+        existing_user = await self.user_repo.get_by_name(name=name)
+
+        if existing_user is not None:
+            raise DomainError(
+                msg=f"Signup failed: username '{name}' is already taken",
+                type=ErrorType.CONFLICT,
+                user_msg="Name already in use",
+                fields=[{"field": "name", "message": "Duplicated"}],
+            )
+
         pw_hash = self.password_hasher.hash(password=password)
 
         user = UserWithPwHash(

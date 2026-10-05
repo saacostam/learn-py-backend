@@ -26,6 +26,7 @@ async def test_signup_returns_created_user_id() -> None:
     )
 
     user_repo = mock_user_repository()
+    user_repo.get_by_name.return_value = None
     user_repo.create.return_value = created_user
 
     use_cases = UserUseCases(
@@ -39,6 +40,7 @@ async def test_signup_returns_created_user_id() -> None:
 
     assert result == "user-1"
 
+    user_repo.get_by_name.assert_awaited_once_with(name="John Doe")
     id_generator.gen.assert_called_once_with()
     password_hasher.hash.assert_called_once_with(password="password")
     user_repo.create.assert_awaited_once_with(
@@ -48,6 +50,39 @@ async def test_signup_returns_created_user_id() -> None:
             pw_hash="password-hash",
         )
     )
+
+
+async def test_signup_raises_conflict_when_name_already_exists() -> None:
+    jwt_adapter = mock_jwt_adapter()
+    id_generator = mock_id_generator()
+    password_hasher = mock_password_hasher()
+
+    existing_user = UserWithPwHash(
+        id="user-1",
+        name="John Doe",
+        pw_hash="hashed-password",
+    )
+
+    user_repo = mock_user_repository()
+    user_repo.get_by_name.return_value = existing_user
+
+    use_cases = UserUseCases(
+        jwt_adapter=jwt_adapter,
+        id_generator=id_generator,
+        password_hasher=password_hasher,
+        user_repo=user_repo,
+    )
+
+    with pytest.raises(DomainError) as error:
+        await use_cases.signup("John Doe", "password")
+
+    assert error.value.type == ErrorType.CONFLICT
+    assert error.value.user_msg == "Name already in use"
+    assert error.value.fields == [{"field": "name", "message": "Duplicated"}]
+
+    user_repo.get_by_name.assert_awaited_once_with(name="John Doe")
+    password_hasher.hash.assert_not_called()
+    user_repo.create.assert_not_awaited()
 
 
 async def test_login_returns_jwt_token() -> None:
