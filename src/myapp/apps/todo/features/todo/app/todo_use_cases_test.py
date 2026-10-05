@@ -172,3 +172,146 @@ async def test_delete_todo_wrong_owner_fails() -> None:
     user_client.get_user_status.assert_awaited_once_with(user_id="user-1")
     todo_repo.get_by_id.assert_awaited_once_with(id="todo-id-123")
     todo_repo.remove.assert_not_awaited()
+
+
+async def test_update_todo_success() -> None:
+    id_generator = mock_id_generator()
+
+    todo_repo = mock_todo_repository()
+    existing_todo = Todo(
+        id="todo-id-123",
+        name="Buy groceries",
+        completed=False,
+        user_id="user-1",
+    )
+    todo_repo.get_by_id.return_value = existing_todo
+
+    updated_todo = Todo(
+        id="todo-id-123",
+        name="Buy organic groceries",
+        completed=True,
+        user_id="user-1",
+    )
+    todo_repo.update.return_value = updated_todo
+
+    user_client = mock_user_client()
+    user_client.get_user_status.return_value = UserStatus.ACTIVE
+
+    use_cases = TodoUseCases(
+        id_generator=id_generator,
+        todo_repo=todo_repo,
+        user_client=user_client,
+    )
+
+    result = await use_cases.update(
+        id="todo-id-123",
+        name="Buy organic groceries",
+        completed=True,
+        user_id="user-1",
+    )
+
+    assert result == updated_todo
+    user_client.get_user_status.assert_awaited_once_with(user_id="user-1")
+    todo_repo.get_by_id.assert_awaited_once_with(id="todo-id-123")
+    todo_repo.update.assert_awaited_once_with(
+        id="todo-id-123",
+        todo=updated_todo,
+    )
+
+
+async def test_update_todo_suspended_user_fails() -> None:
+    id_generator = mock_id_generator()
+    todo_repo = mock_todo_repository()
+
+    user_client = mock_user_client()
+    user_client.get_user_status.return_value = UserStatus.SUSPENDED
+
+    use_cases = TodoUseCases(
+        id_generator=id_generator,
+        todo_repo=todo_repo,
+        user_client=user_client,
+    )
+
+    with pytest.raises(DomainError) as error:
+        await use_cases.update(
+            id="todo-id-123",
+            name="New name",
+            completed=True,
+            user_id="user-1",
+        )
+
+    assert error.value.type == ErrorType.FORBIDDEN
+    assert error.value.user_msg == "User is suspended"
+
+    user_client.get_user_status.assert_awaited_once_with(user_id="user-1")
+    todo_repo.get_by_id.assert_not_awaited()
+    todo_repo.update.assert_not_awaited()
+
+
+async def test_update_todo_not_found_fails() -> None:
+    id_generator = mock_id_generator()
+
+    todo_repo = mock_todo_repository()
+    todo_repo.get_by_id.return_value = None
+
+    user_client = mock_user_client()
+    user_client.get_user_status.return_value = UserStatus.ACTIVE
+
+    use_cases = TodoUseCases(
+        id_generator=id_generator,
+        todo_repo=todo_repo,
+        user_client=user_client,
+    )
+
+    with pytest.raises(DomainError) as error:
+        await use_cases.update(
+            id="non-existent-id",
+            name="New name",
+            completed=True,
+            user_id="user-1",
+        )
+
+    assert error.value.type == ErrorType.NOT_FOUND
+    assert error.value.user_msg == "Todo not found"
+    assert error.value.msg == "Todo with id non-existent-id for user-1 not found"
+
+    user_client.get_user_status.assert_awaited_once_with(user_id="user-1")
+    todo_repo.get_by_id.assert_awaited_once_with(id="non-existent-id")
+    todo_repo.update.assert_not_awaited()
+
+
+async def test_update_todo_wrong_owner_fails() -> None:
+    id_generator = mock_id_generator()
+
+    todo_repo = mock_todo_repository()
+    foreign_todo = Todo(
+        id="todo-id-123",
+        name="Buy groceries",
+        completed=False,
+        user_id="user-2",
+    )
+    todo_repo.get_by_id.return_value = foreign_todo
+
+    user_client = mock_user_client()
+    user_client.get_user_status.return_value = UserStatus.ACTIVE
+
+    use_cases = TodoUseCases(
+        id_generator=id_generator,
+        todo_repo=todo_repo,
+        user_client=user_client,
+    )
+
+    with pytest.raises(DomainError) as error:
+        await use_cases.update(
+            id="todo-id-123",
+            name="New name",
+            completed=True,
+            user_id="user-1",
+        )
+
+    assert error.value.type == ErrorType.NOT_FOUND
+    assert error.value.user_msg == "Todo not found"
+
+    user_client.get_user_status.assert_awaited_once_with(user_id="user-1")
+    todo_repo.get_by_id.assert_awaited_once_with(id="todo-id-123")
+    todo_repo.update.assert_not_awaited()

@@ -39,6 +39,25 @@ class TodoUseCases:
 
         return todo.id
 
+    async def update(
+        self, id: str, name: str | None, completed: bool | None, user_id: str
+    ) -> Todo:
+        await self._ensure_user_active(user_id=user_id, action="update todo")
+
+        todo = await self._get_owned_todo(id=id, user_id=user_id)
+
+        new_todo = await self.todo_repo.update(
+            id=todo.id,
+            todo=Todo(
+                id=todo.id,
+                name=name if name else todo.name,
+                completed=completed if completed else todo.completed,
+                user_id=user_id,
+            ),
+        )
+
+        return new_todo
+
     async def _ensure_user_active(self, user_id: str, action: str) -> None:
         user_status = await self.user_client.get_user_status(user_id=user_id)
 
