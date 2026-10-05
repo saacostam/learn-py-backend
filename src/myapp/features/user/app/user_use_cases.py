@@ -1,15 +1,21 @@
 from myapp.features.user.domain import User, UserRepository, UserWithPwHash
-from myapp.shared.adapters.domain import IdGenerator, PasswordHasher
+from myapp.shared.adapters.domain import (
+    IdGenerator,
+    JwtAdapter,
+    PasswordHasher,
+)
 from myapp.shared.errors.domain import DomainError, ErrorType
 
 
 class UserUseCases:
     def __init__(
         self,
+        jwt_adapter: JwtAdapter,
         id_generator: IdGenerator,
         password_hasher: PasswordHasher,
         user_repo: UserRepository,
     ) -> None:
+        self.jwt_adapter = jwt_adapter
         self.id_generator = id_generator
         self.password_hasher = password_hasher
         self.user_repo = user_repo
@@ -25,6 +31,29 @@ class UserUseCases:
             )
 
         return user
+
+    async def login(self, name: str, password: str) -> str:
+        user = await self.user_repo.get_by_name(name=name)
+
+        discrete_error = DomainError(
+            msg=f"Authentication failed for user '{name}'",
+            type=ErrorType.BAD_REQUEST,
+            user_msg="Invalid credentials",
+        )
+
+        if user is None:
+            raise discrete_error
+
+        password_is_valid = self.password_hasher.verify(
+            plain_password=password, hashed_password=user.pw_hash
+        )
+
+        if not password_is_valid:
+            raise discrete_error
+
+        token = self.jwt_adapter.get_token(user.id)
+
+        return token
 
     async def signup(self, name: str, password: str) -> str:
         pw_hash = self.password_hasher.hash(password=password)

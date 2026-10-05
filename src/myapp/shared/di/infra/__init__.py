@@ -4,16 +4,22 @@ from myapp.features.todo.infra import MemoryTodoRepository, UserModuleClient
 from myapp.features.user.app import UserUseCases
 from myapp.features.user.domain import UserRepository
 from myapp.features.user.infra import MemoryUserRepository
-from myapp.shared.adapters.domain import IdGenerator, PasswordHasher
-from myapp.shared.adapters.infra import BcryptPasswordHasher, UuidGenerator
+from myapp.shared.adapters.domain import IdGenerator, JwtAdapter, PasswordHasher
+from myapp.shared.adapters.infra import (
+    BcryptPasswordHasher,
+    PyJwtAdapter,
+    UuidGenerator,
+)
 
 # Shared
+jwt_adapter: JwtAdapter = PyJwtAdapter()
 id_generator: IdGenerator = UuidGenerator()
 password_hasher: PasswordHasher = BcryptPasswordHasher()
 
 # User Module
 user_repository: UserRepository = MemoryUserRepository()
 user_use_cases = UserUseCases(
+    jwt_adapter=jwt_adapter,
     id_generator=id_generator,
     password_hasher=password_hasher,
     user_repo=user_repository,

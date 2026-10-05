@@ -3,11 +3,17 @@ import pytest
 from myapp.features.user.app.user_use_cases import UserUseCases
 from myapp.features.user.domain import User, UserWithPwHash
 from myapp.features.user.test import mock_user_repository
-from myapp.shared.adapters.test import mock_id_generator, mock_password_hasher
+from myapp.shared.adapters.test import (
+    mock_id_generator,
+    mock_jwt_adapter,
+    mock_password_hasher,
+)
 from myapp.shared.errors.domain import DomainError, ErrorType
 
 
 async def test_signup_returns_created_user_id() -> None:
+    jwt_adapter = mock_jwt_adapter()
+
     id_generator = mock_id_generator()
     id_generator.gen.return_value = "user-1"
 
@@ -23,6 +29,7 @@ async def test_signup_returns_created_user_id() -> None:
     user_repo.create.return_value = created_user
 
     use_cases = UserUseCases(
+        jwt_adapter=jwt_adapter,
         id_generator=id_generator,
         password_hasher=password_hasher,
         user_repo=user_repo,
@@ -43,7 +50,107 @@ async def test_signup_returns_created_user_id() -> None:
     )
 
 
+async def test_login_returns_jwt_token() -> None:
+    jwt_adapter = mock_jwt_adapter()
+    jwt_adapter.get_token.return_value = "mock-jwt-token"
+
+    id_generator = mock_id_generator()
+
+    password_hasher = mock_password_hasher()
+    password_hasher.verify.return_value = True
+
+    existing_user = UserWithPwHash(
+        id="user-1",
+        name="John Doe",
+        pw_hash="hashed-password",
+    )
+
+    user_repo = mock_user_repository()
+    user_repo.get_by_name.return_value = existing_user
+
+    use_cases = UserUseCases(
+        jwt_adapter=jwt_adapter,
+        id_generator=id_generator,
+        password_hasher=password_hasher,
+        user_repo=user_repo,
+    )
+
+    token = await use_cases.login("John Doe", "password123")
+
+    assert token == "mock-jwt-token"
+    user_repo.get_by_name.assert_awaited_once_with(name="John Doe")
+    password_hasher.verify.assert_called_once_with(
+        plain_password="password123", hashed_password="hashed-password"
+    )
+    jwt_adapter.get_token.assert_called_once_with("user-1")
+
+
+async def test_login_raises_bad_request_when_user_not_found() -> None:
+    jwt_adapter = mock_jwt_adapter()
+    id_generator = mock_id_generator()
+    password_hasher = mock_password_hasher()
+
+    user_repo = mock_user_repository()
+    user_repo.get_by_name.return_value = None
+
+    use_cases = UserUseCases(
+        jwt_adapter=jwt_adapter,
+        id_generator=id_generator,
+        password_hasher=password_hasher,
+        user_repo=user_repo,
+    )
+
+    with pytest.raises(DomainError) as error:
+        await use_cases.login("Unknown User", "password123")
+
+    assert error.value.type == ErrorType.BAD_REQUEST
+    assert error.value.user_msg == "Invalid credentials"
+    assert error.value.msg == "Authentication failed for user 'Unknown User'"
+
+    user_repo.get_by_name.assert_awaited_once_with(name="Unknown User")
+    password_hasher.verify.assert_not_called()
+    jwt_adapter.get_token.assert_not_called()
+
+
+async def test_login_raises_bad_request_when_password_is_invalid() -> None:
+    jwt_adapter = mock_jwt_adapter()
+    id_generator = mock_id_generator()
+
+    password_hasher = mock_password_hasher()
+    password_hasher.verify.return_value = False
+
+    existing_user = UserWithPwHash(
+        id="user-1",
+        name="John Doe",
+        pw_hash="hashed-password",
+    )
+
+    user_repo = mock_user_repository()
+    user_repo.get_by_name.return_value = existing_user
+
+    use_cases = UserUseCases(
+        jwt_adapter=jwt_adapter,
+        id_generator=id_generator,
+        password_hasher=password_hasher,
+        user_repo=user_repo,
+    )
+
+    with pytest.raises(DomainError) as error:
+        await use_cases.login("John Doe", "wrong-password")
+
+    assert error.value.type == ErrorType.BAD_REQUEST
+    assert error.value.user_msg == "Invalid credentials"
+    assert error.value.msg == "Authentication failed for user 'John Doe'"
+
+    user_repo.get_by_name.assert_awaited_once_with(name="John Doe")
+    password_hasher.verify.assert_called_once_with(
+        plain_password="wrong-password", hashed_password="hashed-password"
+    )
+    jwt_adapter.get_token.assert_not_called()
+
+
 async def test_get_by_id_returns_user() -> None:
+    jwt_adapter = mock_jwt_adapter()
     id_generator = mock_id_generator()
     password_hasher = mock_password_hasher()
 
@@ -56,6 +163,7 @@ async def test_get_by_id_returns_user() -> None:
     user_repo.get_by_id.return_value = user
 
     use_cases = UserUseCases(
+        jwt_adapter=jwt_adapter,
         id_generator=id_generator,
         password_hasher=password_hasher,
         user_repo=user_repo,
@@ -68,6 +176,7 @@ async def test_get_by_id_returns_user() -> None:
 
 
 async def test_get_by_id_raises_not_found() -> None:
+    jwt_adapter = mock_jwt_adapter()
     id_generator = mock_id_generator()
     password_hasher = mock_password_hasher()
 
@@ -75,6 +184,7 @@ async def test_get_by_id_raises_not_found() -> None:
     user_repo.get_by_id.return_value = None
 
     use_cases = UserUseCases(
+        jwt_adapter=jwt_adapter,
         id_generator=id_generator,
         password_hasher=password_hasher,
         user_repo=user_repo,
