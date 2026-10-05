@@ -8,11 +8,12 @@ user_router = APIRouter()
 
 class CreateUserRequest(BaseModel):
     name: str
+    password: str
 
 
 @user_router.post("/")
 async def create_user_route(request: CreateUserRequest) -> str:
-    res = await user_use_cases.create(name=request.name)
+    res = await user_use_cases.create(name=request.name, password=request.password)
     return res
 
 

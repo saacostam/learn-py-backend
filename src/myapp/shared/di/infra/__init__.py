@@ -4,15 +4,20 @@ from myapp.features.todo.infra import MemoryTodoRepository, UserModuleClient
 from myapp.features.user.app import UserUseCases
 from myapp.features.user.domain import UserRepository
 from myapp.features.user.infra import MemoryUserRepository
-from myapp.shared.adapters.domain import IdGenerator
-from myapp.shared.adapters.infra import UuidGenerator
+from myapp.shared.adapters.domain import IdGenerator, PasswordHasher
+from myapp.shared.adapters.infra import BcryptPasswordHasher, UuidGenerator
 
 # Shared
 id_generator: IdGenerator = UuidGenerator()
+password_hasher: PasswordHasher = BcryptPasswordHasher()
 
 # User Module
 user_repository: UserRepository = MemoryUserRepository()
-user_use_cases = UserUseCases(id_generator=id_generator, user_repo=user_repository)
+user_use_cases = UserUseCases(
+    id_generator=id_generator,
+    password_hasher=password_hasher,
+    user_repo=user_repository,
+)
 
 ### Todo User Module
 todo_repository: TodoRepository = MemoryTodoRepository()
