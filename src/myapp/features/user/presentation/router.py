@@ -12,8 +12,8 @@ class CreateUserRequest(BaseModel):
 
 
 @user_router.post("/")
-async def create_user_route(request: CreateUserRequest) -> str:
-    res = await user_use_cases.create(name=request.name, password=request.password)
+async def signup_user_route(request: CreateUserRequest) -> str:
+    res = await user_use_cases.signup(name=request.name, password=request.password)
     return res
 
 

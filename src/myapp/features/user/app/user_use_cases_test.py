@@ -7,7 +7,7 @@ from myapp.shared.adapters.test import mock_id_generator, mock_password_hasher
 from myapp.shared.errors.domain import DomainError, ErrorType
 
 
-async def test_create_returns_created_user_id() -> None:
+async def test_signup_returns_created_user_id() -> None:
     id_generator = mock_id_generator()
     id_generator.gen.return_value = "user-1"
 
@@ -28,7 +28,7 @@ async def test_create_returns_created_user_id() -> None:
         user_repo=user_repo,
     )
 
-    result = await use_cases.create("John Doe", "password")
+    result = await use_cases.signup("John Doe", "password")
 
     assert result == "user-1"
 

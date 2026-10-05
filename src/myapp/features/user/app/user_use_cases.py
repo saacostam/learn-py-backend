@@ -14,7 +14,7 @@ class UserUseCases:
         self.password_hasher = password_hasher
         self.user_repo = user_repo
 
-    async def create(self, name: str, password: str) -> str:
+    async def signup(self, name: str, password: str) -> str:
         pw_hash = self.password_hasher.hash(password=password)
 
         user = UserWithPwHash(
