@@ -20,20 +20,45 @@ class TodoUseCases:
         self.user_client = user_client
 
     async def create(self, name: str, user_id: str) -> Todo:
-        user_status = await self.user_client.get_user_status(user_id=user_id)
-
-        if user_status == UserStatus.SUSPENDED:
-            raise DomainError(
-                msg=f"User with id {user_id} can't create todo",
-                user_msg="User is suspended",
-                type=ErrorType.FORBIDDEN,
-            )
+        await self._ensure_user_active(user_id, action="create todo")
 
         todo: Todo = Todo(
             id=self.id_generator.gen(),
             name=name,
             completed=False,
+            user_id=user_id,
         )
 
-        created_todo = await self.todo_repo.create(todo)
-        return created_todo
+        return await self.todo_repo.create(todo)
+
+    async def delete(self, id: str, user_id: str) -> str:
+        await self._ensure_user_active(user_id, action="delete todo")
+
+        todo = await self._get_owned_todo(id=id, user_id=user_id)
+        await self.todo_repo.remove(id=todo.id)
+
+        return todo.id
+
+    async def _ensure_user_active(self, user_id: str, action: str) -> None:
+        user_status = await self.user_client.get_user_status(user_id=user_id)
+
+        if user_status == UserStatus.SUSPENDED:
+            raise DomainError(
+                msg=f"User with id {user_id} can't {action}",
+                user_msg="User is suspended",
+                type=ErrorType.FORBIDDEN,
+            )
+
+    async def _get_owned_todo(self, id: str, user_id: str) -> Todo:
+        todo = await self.todo_repo.get_by_id(id=id)
+
+        discrete_not_found_exception = DomainError(
+            msg=f"Todo with id {id} for {user_id} not found",
+            user_msg="Todo not found",
+            type=ErrorType.NOT_FOUND,
+        )
+
+        if todo is None or todo.user_id != user_id:
+            raise discrete_not_found_exception
+
+        return todo
