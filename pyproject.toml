@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.13"
 dependencies = [
     "fastapi[standard]>=0.142.1",
+    "pyjwt>=2.15.1",
 ]
 
 [project.scripts]
@@ -43,3 +44,6 @@ asyncio_mode = "auto"
 
 [tool.fastapi]
 entrypoint = "myapp.main:app"
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]
