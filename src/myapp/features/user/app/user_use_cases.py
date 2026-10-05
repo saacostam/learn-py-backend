@@ -14,6 +14,18 @@ class UserUseCases:
         self.password_hasher = password_hasher
         self.user_repo = user_repo
 
+    async def get_by_id(self, id: str) -> User:
+        user = await self.user_repo.get_by_id(user_id=id)
+
+        if user is None:
+            raise DomainError(
+                msg=f"User with id '{id}' was not found",
+                type=ErrorType.NOT_FOUND,
+                user_msg="User not found.",
+            )
+
+        return user
+
     async def signup(self, name: str, password: str) -> str:
         pw_hash = self.password_hasher.hash(password=password)
 
@@ -26,15 +38,3 @@ class UserUseCases:
         created_user = await self.user_repo.create(user)
 
         return created_user.id
-
-    async def get_by_id(self, id: str) -> User:
-        user = await self.user_repo.get_by_id(user_id=id)
-
-        if user is None:
-            raise DomainError(
-                msg=f"User with id '{id}' was not found",
-                type=ErrorType.NOT_FOUND,
-                user_msg="User not found.",
-            )
-
-        return user
