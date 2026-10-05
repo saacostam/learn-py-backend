@@ -9,6 +9,15 @@ class MemoryTodoRepository:
         self._todos.append(todo)
         return todo
 
+    async def get_all_by_user_id(self, user_id: str) -> list[Todo]:
+        users_todos: list[Todo] = []
+
+        for todo in self._todos:
+            if todo.user_id == user_id:
+                users_todos.append(todo)
+
+        return users_todos
+
     async def get_by_id(self, id: str) -> Todo | None:
         for todo in self._todos:
             if todo.id == id:
