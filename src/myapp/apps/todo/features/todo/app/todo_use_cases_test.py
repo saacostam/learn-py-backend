@@ -219,6 +219,96 @@ async def test_update_todo_success() -> None:
     )
 
 
+async def test_update_todo_partial_name_only_success() -> None:
+    id_generator = mock_id_generator()
+    todo_repo = mock_todo_repository()
+
+    existing_todo = Todo(
+        id="todo-id-123",
+        name="Buy groceries",
+        completed=False,
+        user_id="user-1",
+    )
+    todo_repo.get_by_id.return_value = existing_todo
+
+    # Expected result: name changes, completed stays False
+    expected_updated_todo = Todo(
+        id="todo-id-123",
+        name="Buy organic groceries",
+        completed=False,
+        user_id="user-1",
+    )
+    todo_repo.update.return_value = expected_updated_todo
+
+    user_client = mock_user_client()
+    user_client.get_user_status.return_value = UserStatus.ACTIVE
+
+    use_cases = TodoUseCases(
+        id_generator=id_generator,
+        todo_repo=todo_repo,
+        user_client=user_client,
+    )
+
+    result = await use_cases.update(
+        id="todo-id-123",
+        name="Buy organic groceries",
+        completed=None,
+        user_id="user-1",
+    )
+
+    assert result == expected_updated_todo
+    user_client.get_user_status.assert_awaited_once_with(user_id="user-1")
+    todo_repo.get_by_id.assert_awaited_once_with(id="todo-id-123")
+    todo_repo.update.assert_awaited_once_with(
+        id="todo-id-123",
+        todo=expected_updated_todo,
+    )
+
+
+async def test_update_todo_partial_completed_to_false_success() -> None:
+    id_generator = mock_id_generator()
+    todo_repo = mock_todo_repository()
+
+    existing_todo = Todo(
+        id="todo-id-123",
+        name="Buy groceries",
+        completed=True,  # Currently true
+        user_id="user-1",
+    )
+    todo_repo.get_by_id.return_value = existing_todo
+
+    # Expected result: name stays the same, completed updates to False
+    expected_updated_todo = Todo(
+        id="todo-id-123",
+        name="Buy groceries",
+        completed=False,
+        user_id="user-1",
+    )
+    todo_repo.update.return_value = expected_updated_todo
+
+    user_client = mock_user_client()
+    user_client.get_user_status.return_value = UserStatus.ACTIVE
+
+    use_cases = TodoUseCases(
+        id_generator=id_generator,
+        todo_repo=todo_repo,
+        user_client=user_client,
+    )
+
+    result = await use_cases.update(
+        id="todo-id-123",
+        name=None,
+        completed=False,  # Explicitly toggling back to False
+        user_id="user-1",
+    )
+
+    assert result == expected_updated_todo
+    todo_repo.update.assert_awaited_once_with(
+        id="todo-id-123",
+        todo=expected_updated_todo,
+    )
+
+
 async def test_update_todo_suspended_user_fails() -> None:
     id_generator = mock_id_generator()
     todo_repo = mock_todo_repository()

@@ -50,8 +50,8 @@ class TodoUseCases:
             id=todo.id,
             todo=Todo(
                 id=todo.id,
-                name=name if name else todo.name,
-                completed=completed if completed else todo.completed,
+                name=name if name is not None else todo.name,
+                completed=completed if completed is not None else todo.completed,
                 user_id=user_id,
             ),
         )
