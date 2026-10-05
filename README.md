@@ -1,6 +1,8 @@
 # MyApp
 
-FastAPI application managed with [uv](https://docs.astral.sh/uv/).
+Python backend API for learning and eventually developing apps with Python.
+
+The repository is organized around multiple apps that share the same runtime and infrastructure. Individual apps live under `apps/`.
 
 ## Setup
 
