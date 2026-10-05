@@ -1,4 +1,4 @@
-from myapp.features.user.domain import User, UserRepository
+from myapp.features.user.domain import User, UserRepository, UserWithPwHash
 from myapp.shared.adapters.domain import IdGenerator
 from myapp.shared.errors.domain import DomainError, ErrorType
 
@@ -9,9 +9,10 @@ class UserUseCases:
         self.user_repo = user_repo
 
     async def create(self, name: str) -> str:
-        user: User = User(
+        user = UserWithPwHash(
             id=self.id_generator.gen(),
             name=name,
+            pw_hash="REPLACE_ME",
         )
 
         created_user = await self.user_repo.create(user)

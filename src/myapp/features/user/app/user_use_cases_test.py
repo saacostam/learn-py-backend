@@ -1,7 +1,7 @@
 import pytest
 
 from myapp.features.user.app.user_use_cases import UserUseCases
-from myapp.features.user.domain import User
+from myapp.features.user.domain import User, UserWithPwHash
 from myapp.features.user.test import mock_user_repository
 from myapp.shared.adapters.test import mock_id_generator
 from myapp.shared.errors.domain import DomainError, ErrorType
@@ -30,9 +30,10 @@ async def test_create_returns_created_user_id() -> None:
 
     id_generator.gen.assert_called_once_with()
     user_repo.create.assert_awaited_once_with(
-        User(
+        UserWithPwHash(
             id="user-1",
             name="John Doe",
+            pw_hash="REPLACE_ME",
         )
     )
 
