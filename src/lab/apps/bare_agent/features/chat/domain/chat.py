@@ -15,6 +15,11 @@ class Turn:
 
 
 @dataclass
-class Chat:
+class LeanChat:
     id: str
-    turns: Turn
+    user_id: str
+
+
+@dataclass
+class Chat(LeanChat):
+    turns: list[Turn]
