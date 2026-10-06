@@ -11,6 +11,7 @@ class Though:
 class LeanChainOfThough:
     id: str
     chat_id: str
+    objective: str
 
 
 @dataclass
