@@ -8,6 +8,11 @@ class Though:
 
 
 @dataclass
-class ChainOfThough:
+class LeanChainOfThough:
     id: str
+    chat_id: str
+
+
+@dataclass
+class ChainOfThough(LeanChainOfThough):
     thoughts: list[Though]
