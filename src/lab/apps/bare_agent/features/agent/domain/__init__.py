@@ -1,11 +1,11 @@
-from .though import ChainOfThough, LeanChainOfThough, Though
-from .though_repository import ChainOfThoughRepository
+from .though import ChainOfThought, LeanChainOfThought, Thought
+from .though_repository import ChainOfThoughtRepository
 from .tool import Tool
 
 __all__ = [
-    "ChainOfThough",
-    "ChainOfThoughRepository",
-    "LeanChainOfThough",
-    "Though",
+    "ChainOfThought",
+    "ChainOfThoughtRepository",
+    "LeanChainOfThought",
+    "Thought",
     "Tool",
 ]

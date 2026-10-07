@@ -2,18 +2,18 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Though:
+class Thought:
     id: str
     content: str
 
 
 @dataclass
-class LeanChainOfThough:
+class LeanChainOfThought:
     id: str
     chat_id: str
     objective: str
 
 
 @dataclass
-class ChainOfThough(LeanChainOfThough):
-    thoughts: list[Though]
+class ChainOfThought(LeanChainOfThought):
+    thoughts: list[Thought]

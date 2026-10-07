@@ -1,5 +1,5 @@
 __all__ = [
-    "MemoryThoughRepository",
+    "MemoryThoughtRepository",
 ]
 
-from .memory_though_repository import MemoryThoughRepository
+from .memory_though_repository import MemoryThoughtRepository
