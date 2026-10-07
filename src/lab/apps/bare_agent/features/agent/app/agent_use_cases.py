@@ -15,10 +15,11 @@ from lab.apps.bare_agent.shared.adapters.domain import (
     Queue,
     QueueEntry,
 )
+from lab.shared.errors.domain import DomainError, ErrorType
 
 
 @dataclass
-class CreateResult:
+class ChatIdentifier:
     chat_id: str
 
 
@@ -38,7 +39,7 @@ class AgentUseCases:
         self._id_generator = id_generator
         self._queue = queue
 
-    async def create(self, message: str) -> CreateResult:
+    async def create(self, message: str) -> ChatIdentifier:
         # Create Chat
         chat_to_be_created: Chat = Chat(
             id=self._id_generator.gen(),
@@ -54,10 +55,34 @@ class AgentUseCases:
 
         chat = await self._chat_repo.create(chat=chat_to_be_created)
 
+        chain_identifier = await self._start_chain_of_though(
+            chat_id=chat.id, message=message
+        )
+
+        return chain_identifier
+
+    async def resume(self, chat_id: str, message: str) -> ChatIdentifier:
+        chat = await self._chat_repo.get_by_id(id=chat_id)
+
+        if chat is None:
+            raise DomainError(
+                msg="Chat was not found",
+                type=ErrorType.NOT_FOUND,
+                user_msg=f"Chat with id {chat_id} was not found",
+            )
+
+        chain_identifier = await self._start_chain_of_though(
+            chat_id=chat.id,
+            message=message,
+        )
+
+        return chain_identifier
+
+    async def _start_chain_of_though(self, chat_id: str, message: str):
         # Create CoT
         chain_of_though_to_be_created: ChainOfThought = ChainOfThought(
             id=self._id_generator.gen(),
-            chat_id=chat.id,
+            chat_id=chat_id,
             objective=f"Answer this message from the user: ${message}",
             thoughts=[],
         )
@@ -68,12 +93,12 @@ class AgentUseCases:
         await self._queue.add(
             QueueEntry(
                 id=self._id_generator.gen(),
-                chat_id=chat.id,
+                chat_id=chat_id,
                 cot_id=cot.id,
                 type="decision",
             )
         )
 
-        return CreateResult(
-            chat_id=chat.id,
+        return ChatIdentifier(
+            chat_id=chat_id,
         )

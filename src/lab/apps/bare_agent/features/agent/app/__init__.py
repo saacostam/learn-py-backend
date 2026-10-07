@@ -1,3 +1,3 @@
-__all__ = ["AgentUseCases", "CreateResult"]
+__all__ = ["AgentUseCases", "ChatIdentifier"]
 
-from .agent_use_cases import AgentUseCases, CreateResult
+from .agent_use_cases import AgentUseCases, ChatIdentifier
