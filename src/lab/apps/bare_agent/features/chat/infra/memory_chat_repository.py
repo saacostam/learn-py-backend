@@ -9,12 +9,12 @@ class MemoryChatRepository:
         self._chats.append(chat)
         return chat
 
-    async def get_by_id(self, id: str) -> Chat:
+    async def get_by_id(self, id: str) -> Chat | None:
         for chat in self._chats:
             if chat.id == id:
                 return chat
 
-        raise ValueError(f"Chat with id {id} not found")
+        return None
 
     async def get_all_by_user_id(self, user_id: str) -> list[LeanChat]:
         chats: list[LeanChat] = []
