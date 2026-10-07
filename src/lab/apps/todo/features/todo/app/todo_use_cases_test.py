@@ -1,11 +1,10 @@
 import pytest
 
+from lab.apps.todo.features.todo.app import TodoUseCases
 from lab.apps.todo.features.todo.domain import Todo, UserStatus
 from lab.apps.todo.features.todo.test import mock_todo_repository, mock_user_client
 from lab.apps.todo.shared.adapters.test import mock_id_generator
 from lab.shared.errors.domain import DomainError, ErrorType
-
-from . import TodoUseCases
 
 
 async def test_create_todo_success() -> None:
