@@ -4,6 +4,7 @@ from logging import getLogger
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 
 from lab.apps.bare_agent.shared.di.infra import (
     agent_worker_use_cases,
@@ -48,6 +49,14 @@ app.include_router(todo_app_router, prefix="/todo", tags=["todo"])
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(DomainError, domain_error_exception_handler)
 app.add_exception_handler(Exception, generic_exception_handler)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
