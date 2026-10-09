@@ -61,7 +61,22 @@ class AgentUseCases:
 
         return chain_identifier
 
+    async def get_by_id(self, chat_id: str) -> Chat:
+        chat = await self._get_owned_chat_by_id(chat_id=chat_id)
+
+        return chat
+
     async def resume(self, chat_id: str, message: str) -> ChatIdentifier:
+        chat = await self._get_owned_chat_by_id(chat_id=chat_id)
+
+        chain_identifier = await self._start_chain_of_though(
+            chat_id=chat.id,
+            message=message,
+        )
+
+        return chain_identifier
+
+    async def _get_owned_chat_by_id(self, chat_id: str) -> Chat:
         chat = await self._chat_repo.get_by_id(id=chat_id)
 
         if chat is None:
@@ -71,12 +86,7 @@ class AgentUseCases:
                 user_msg=f"Chat with id {chat_id} was not found",
             )
 
-        chain_identifier = await self._start_chain_of_though(
-            chat_id=chat.id,
-            message=message,
-        )
-
-        return chain_identifier
+        return chat
 
     async def _start_chain_of_though(self, chat_id: str, message: str):
         # Create CoT
