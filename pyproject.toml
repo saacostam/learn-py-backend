@@ -10,6 +10,7 @@ requires-python = ">=3.13"
 dependencies = [
     "bcrypt>=5.0.0",
     "fastapi[standard]>=0.142.1",
+    "openai>=3.27.0",
     "pyjwt>=2.15.1",
 ]
 

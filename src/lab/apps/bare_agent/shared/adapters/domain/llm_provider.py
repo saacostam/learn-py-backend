@@ -17,12 +17,12 @@ class Message:
     content: str
 
 
-T = TypeVar("T", bound=BaseModel)
+OutputT = TypeVar("OutputT", bound=BaseModel)
 
 
 class LLMProvider(Protocol):
     async def generate(
         self,
         messages: list[Message],
-        output_schema: type[T],
-    ) -> T: ...
+        output_schema: type[OutputT],
+    ) -> OutputT: ...
