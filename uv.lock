@@ -664,6 +664,7 @@ dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "openai" },
     { name = "pyjwt" },
+    { name = "python-dotenv" },
 ]
 
 [package.dev-dependencies]
@@ -683,6 +684,7 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.142.1" },
     { name = "openai", specifier = ">=3.27.0" },
     { name = "pyjwt", specifier = ">=2.15.1" },
+    { name = "python-dotenv", specifier = ">=1.2.3" },
 ]
 
 [package.metadata.requires-dev]
