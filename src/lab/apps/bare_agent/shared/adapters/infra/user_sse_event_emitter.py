@@ -9,6 +9,8 @@ from lab.apps.bare_agent.shared.adapters.domain import (
 
 
 class UserSSEEventEmitter:
+    HEARTBEAT_INTERVAL_SECONDS = 15
+
     def __init__(self) -> None:
         self._connections: dict[
             str,
@@ -35,9 +37,16 @@ class UserSSEEventEmitter:
 
         try:
             while True:
-                event = await queue.get()
-                data = json.dumps(asdict(event))
+                try:
+                    event = await asyncio.wait_for(
+                        queue.get(),
+                        timeout=self.HEARTBEAT_INTERVAL_SECONDS,
+                    )
+                except TimeoutError:
+                    yield ": keep-alive\n\n"
+                    continue
 
+                data = json.dumps(asdict(event))
                 yield f"event: {event.type}\ndata: {data}\n\n"
         finally:
             async with self._lock:
