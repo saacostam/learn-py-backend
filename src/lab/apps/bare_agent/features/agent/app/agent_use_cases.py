@@ -7,6 +7,7 @@ from lab.apps.bare_agent.features.agent.domain import (
 from lab.apps.bare_agent.features.chat.domain import (
     Chat,
     ChatRepository,
+    LeanChat,
     Turn,
     TurnType,
 )
@@ -60,6 +61,11 @@ class AgentUseCases:
         )
 
         return chain_identifier
+
+    async def get_all_chats(self) -> list[LeanChat]:
+        chats = await self._chat_repo.get_all_by_user_id(user_id=USER_ID)
+
+        return chats
 
     async def get_by_id(self, chat_id: str) -> Chat:
         chat = await self._get_owned_chat_by_id(chat_id=chat_id)

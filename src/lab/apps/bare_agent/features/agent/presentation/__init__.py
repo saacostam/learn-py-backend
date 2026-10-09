@@ -4,7 +4,7 @@ from typing import Annotated, Protocol
 from fastapi import APIRouter, Path, Query
 from fastapi.responses import StreamingResponse
 
-from lab.apps.bare_agent.features.chat.domain import Chat
+from lab.apps.bare_agent.features.chat.domain import Chat, LeanChat
 from lab.apps.bare_agent.shared.di.infra import (
     agent_use_cases,
     user_sse_event_emitter,
@@ -14,6 +14,7 @@ from .schema import (
     CreateAgentRequest,
     CreateAgentResponse,
     GetAgentResponse,
+    LeanChatResponse,
     TurnResponse,
 )
 
@@ -31,6 +32,19 @@ async def create_agent(
     result = await agent_use_cases.create(message=request.message)
 
     return CreateAgentResponse(chat_id=result.chat_id)
+
+
+@agent_router.get("/", response_model=list[LeanChatResponse])
+async def get_all_chats() -> list[LeanChatResponse]:
+    chats: list[LeanChat] = await agent_use_cases.get_all_chats()
+
+    return [
+        LeanChatResponse(
+            id=chat.id,
+            user_id=chat.user_id,
+        )
+        for chat in chats
+    ]
 
 
 @agent_router.get("/{chat_id}", response_model=GetAgentResponse)

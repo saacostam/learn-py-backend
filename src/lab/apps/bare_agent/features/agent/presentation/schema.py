@@ -21,3 +21,8 @@ class GetAgentResponse(BaseModel):
     id: str
     user_id: str
     turns: list[TurnResponse]
+
+
+class LeanChatResponse(BaseModel):
+    id: str
+    user_id: str
